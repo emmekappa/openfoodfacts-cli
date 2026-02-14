@@ -1,0 +1,44 @@
+{
+  "name": "openfoodfacts-cli",
+  "version": "0.1.0",
+  "description": "Command-line interface for the OpenFoodFacts API, ready for AI agents",
+  "type": "module",
+  "license": "MIT",
+  "author": "Michele Cantelli <emmekappa@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emmekappa/openfoodfacts-cli.git"
+  },
+  "homepage": "https://github.com/emmekappa/openfoodfacts-cli",
+  "bugs": {
+    "url": "https://github.com/emmekappa/openfoodfacts-cli/issues"
+  },
+  "keywords": [
+    "openfoodfacts",
+    "food",
+    "nutrition",
+    "cli",
+    "ai-agents"
+  ],
+  "bin": {
+    "off": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "bun build src/cli.ts --outdir dist --target node --format esm --banner '#!/usr/bin/env node'",
+    "prepublishOnly": "bun run build",
+    "start": "bun run src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:integration": "bun test --test-name-pattern integration"
+  },
+  "dependencies": {
+    "@openfoodfacts/openfoodfacts-nodejs": "^2.0.0-alpha.29",
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.8.0"
+  }
+}
