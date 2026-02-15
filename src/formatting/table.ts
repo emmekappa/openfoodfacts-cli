@@ -1,3 +1,15 @@
+import {
+  colorBarcode,
+  colorBrand,
+  colorCategories,
+  colorHeader,
+  colorName,
+  colorNutriscore,
+  colorNutrient,
+  padEndVisible,
+  stripAnsi,
+} from "./colors.js";
+
 interface Nutriments {
   "energy-kcal_100g"?: number;
   "fat_100g"?: number;
@@ -10,35 +22,48 @@ interface Product {
   code?: string;
   product_name?: string;
   brands?: string[] | string;
+  categories?: string;
   nutrition_grades?: string;
   nutriments?: Nutriments;
 }
 
-export function formatProductTable(hits: Record<string, unknown>[]): void {
+export interface TableOptions {
+  truncate?: boolean;
+}
+
+export function formatProductTable(
+  hits: Record<string, unknown>[],
+  options: TableOptions = {}
+): void {
+  const { truncate: shouldTruncate = true } = options;
   const products = hits as unknown as Product[];
-  const headers = ["Barcode", "Name", "Brand", "Nutriscore", "kcal", "Fat", "Carbs", "Prot", "Salt"];
+  const headers = ["Barcode", "Name", "Brand", "Categories", "Nutriscore", "kcal", "Fat", "Carbs", "Prot", "Salt"];
+
+  const t = (str: string, maxLen: number): string =>
+    shouldTruncate ? truncate(str, maxLen) : str;
 
   const rows = products.map((p) => [
-    p.code ?? "-",
-    truncate(p.product_name ?? "-", 40),
-    truncate(formatBrands(p.brands), 25),
-    formatNutriscore(p.nutrition_grades),
-    formatNutrient(p.nutriments?.["energy-kcal_100g"]),
-    formatNutrient(p.nutriments?.["fat_100g"]),
-    formatNutrient(p.nutriments?.["carbohydrates_100g"]),
-    formatNutrient(p.nutriments?.["proteins_100g"]),
-    formatNutrient(p.nutriments?.["salt_100g"]),
+    colorBarcode(p.code ?? "-"),
+    colorName(t(p.product_name ?? "-", 40)),
+    colorBrand(t(formatBrands(p.brands), 25)),
+    colorCategories(t(p.categories ?? "-", 30)),
+    colorNutriscore(p.nutrition_grades),
+    colorNutrient(p.nutriments?.["energy-kcal_100g"], "energy-kcal_100g"),
+    colorNutrient(p.nutriments?.["fat_100g"], "fat_100g"),
+    colorNutrient(p.nutriments?.["carbohydrates_100g"], "carbohydrates_100g"),
+    colorNutrient(p.nutriments?.["proteins_100g"], "proteins_100g"),
+    colorNutrient(p.nutriments?.["salt_100g"], "salt_100g"),
   ]);
 
   const widths = headers.map((h, i) =>
-    Math.max(h.length, ...rows.map((r) => r[i].length))
+    Math.max(h.length, ...rows.map((r) => stripAnsi(r[i]).length))
   );
 
-  console.log(headers.map((h, i) => h.padEnd(widths[i])).join("  "));
+  console.log(headers.map((h, i) => colorHeader(h.padEnd(widths[i]))).join("  "));
   console.log(widths.map((w) => "-".repeat(w)).join("  "));
 
   for (const row of rows) {
-    console.log(row.map((cell, i) => cell.padEnd(widths[i])).join("  "));
+    console.log(row.map((cell, i) => padEndVisible(cell, widths[i])).join("  "));
   }
 }
 
@@ -51,14 +76,4 @@ function formatBrands(brands: string[] | string | undefined): string {
   if (!brands) return "-";
   if (Array.isArray(brands)) return brands.join(", ");
   return brands;
-}
-
-function formatNutriscore(grade: string | undefined): string {
-  if (!grade || grade === "unknown" || grade === "not-applicable") return "-";
-  return grade.toUpperCase();
-}
-
-function formatNutrient(value: number | undefined): string {
-  if (value === undefined || value === null) return "-";
-  return value % 1 === 0 ? String(value) : value.toFixed(1);
 }
