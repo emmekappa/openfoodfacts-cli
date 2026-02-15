@@ -1,17 +1,22 @@
 import type { Command } from "commander";
 import { getClient } from "../client.js";
-import { formatProductTable } from "../formatting/table.js";
+import { formatProductDetail } from "../formatting/detail.js";
+import {
+  getCategoryTaxonomy,
+  translateCategoryTags,
+} from "../taxonomy.js";
 
 export function registerGetCommand(program: Command): void {
   program
     .command("get <ean>")
     .description("Get a product by EAN barcode")
     .action(async (ean: string) => {
-      await handleGet(ean);
+      const lang = program.opts().lang as string;
+      await handleGet(ean, lang);
     });
 }
 
-async function handleGet(ean: string): Promise<void> {
+async function handleGet(ean: string, lang: string): Promise<void> {
   const client = getClient();
 
   const { data, error } = await client.getProductV3(ean, { fields: ["all"] });
@@ -35,5 +40,12 @@ async function handleGet(ean: string): Promise<void> {
     return;
   }
 
-  formatProductTable([product]);
+  const taxonomy = await getCategoryTaxonomy(client);
+  const categories = translateCategoryTags(
+    taxonomy,
+    (product.categories_tags as string[]) ?? [],
+    lang
+  );
+
+  formatProductDetail({ ...product, categories });
 }
