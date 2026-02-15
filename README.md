@@ -1,15 +1,11 @@
 # openfoodfacts-cli
 
-A command-line interface for the [OpenFoodFacts API](https://world.openfoodfacts.org/).
+Command-line interface for the [OpenFoodFacts API](https://world.openfoodfacts.org/), ready for AI agents.
 
-## Prerequisites
-
-- [Bun](https://bun.sh/) runtime
-
-## Setup
+## Installation
 
 ```bash
-bun install
+npm install -g openfoodfacts-cli
 ```
 
 ## Usage
@@ -17,7 +13,7 @@ bun install
 ### Search for products
 
 ```bash
-bun run src/cli.ts search <query>
+off search <query>
 ```
 
 Options:
@@ -31,21 +27,39 @@ Options:
 Examples:
 
 ```bash
-bun run src/cli.ts search nutella
-bun run src/cli.ts search "organic chocolate" --page-size 5
-bun run src/cli.ts search pasta --page 2
+off search nutella
+off search "organic chocolate" --page-size 5
+off search pasta --page 2
 ```
 
 ### Get a product by barcode
 
 ```bash
-bun run src/cli.ts get <ean>
+off get <ean>
 ```
 
 Example:
 
 ```bash
-bun run src/cli.ts get 3017620422003
+off get 3017620422003
+```
+
+## Development
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) runtime
+
+### Setup
+
+```bash
+bun install
+```
+
+### Run locally
+
+```bash
+bun run src/cli.ts search nutella
 ```
 
 ## Dependencies
