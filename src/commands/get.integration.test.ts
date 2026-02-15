@@ -8,27 +8,27 @@ function getClient(): OpenFoodFacts {
 describe("get endpoint (integration)", () => {
   test("returns product data for a known barcode", async () => {
     const client = getClient();
-    const { data, error } = await client.getProductV2("3017620422003"); // Nutella
+    const { data, error } = await client.getProductV3("3017620422003", { fields: ["all"] }); // Nutella
 
     expect(error).toBeUndefined();
     expect(data).toBeDefined();
+    expect(data!.status).toMatch(/^success/);
+    expect("product" in data!).toBe(true);
 
-    const result = data as { status: number; product?: Record<string, unknown> };
-
-    expect(result.status).toBe(1);
-    expect(result.product).toBeDefined();
-    expect(result.product!.code).toBe("3017620422003");
-    expect(result.product!.product_name).toBeDefined();
+    const product = (data as { product: Record<string, unknown> }).product;
+    expect(product.code).toBe("3017620422003");
+    expect(product.product_name).toBeDefined();
   });
 
   test("product contains nutriments with expected fields", async () => {
     const client = getClient();
-    const { data } = await client.getProductV2("3017620422003"); // Nutella
+    const { data } = await client.getProductV3("3017620422003", { fields: ["all"] }); // Nutella
 
-    const result = data as { product?: Record<string, unknown> };
-    expect(result.product).toBeDefined();
+    expect(data).toBeDefined();
+    const product = (data as { product: Record<string, unknown> }).product;
+    expect(product).toBeDefined();
 
-    const nutriments = result.product!.nutriments as Record<string, unknown>;
+    const nutriments = product.nutriments as Record<string, unknown>;
     expect(nutriments).toBeDefined();
 
     const expectedKeys = [
@@ -46,23 +46,23 @@ describe("get endpoint (integration)", () => {
 
   test("product contains brands and nutrition_grades", async () => {
     const client = getClient();
-    const { data } = await client.getProductV2("3017620422003"); // Nutella
+    const { data } = await client.getProductV3("3017620422003", { fields: ["all"] }); // Nutella
 
-    const result = data as { product?: Record<string, unknown> };
-    expect(result.product).toBeDefined();
-    expect(result.product!.brands).toBeDefined();
-    expect(result.product!.nutrition_grades).toBeDefined();
+    expect(data).toBeDefined();
+    const product = (data as { product: Record<string, unknown> }).product;
+    expect(product).toBeDefined();
+    expect(product.brands).toBeDefined();
+    expect(product.nutrition_grades).toBeDefined();
   });
 
-  test("returns status 0 for a non-existent barcode", async () => {
+  test("returns empty product for a non-existent barcode", async () => {
     const client = getClient();
-    const { data, error } = await client.getProductV2("0000000000000");
+    const { data, error } = await client.getProductV3("0000000000000", { fields: ["all"] });
 
     expect(error).toBeUndefined();
     expect(data).toBeDefined();
 
-    const result = data as { status: number; product?: Record<string, unknown> };
-
-    expect(result.status).toBe(0);
+    const product = (data as { product: Record<string, unknown> }).product;
+    expect(product.product_name).toBeUndefined();
   });
 });

@@ -14,19 +14,26 @@ export function registerGetCommand(program: Command): void {
 async function handleGet(ean: string): Promise<void> {
   const client = getClient();
 
-  const { data, error } = await client.getProductV2(ean);
+  const { data, error } = await client.getProductV3(ean, { fields: ["all"] });
 
   if (error || !data) {
-    console.error("Lookup failed:", error ?? "No data returned");
+    const err = error as { result?: { name?: string } } | undefined;
+    const message = err?.result?.name ?? "Product not found";
+    console.error(message);
     process.exit(1);
   }
 
-  const result = data as { status: number; product?: Record<string, unknown> };
+  if (data.status === "failure") {
+    console.error(data.result.name);
+    process.exit(1);
+  }
 
-  if (!result.product || result.status === 0) {
+  const product = data.product as unknown as Record<string, unknown>;
+
+  if (!product.product_name) {
     console.log("Product not found.");
     return;
   }
 
-  formatProductTable([result.product]);
+  formatProductTable([product]);
 }
