@@ -16,8 +16,13 @@ export async function getCategoryTaxonomy(
   client: OpenFoodFacts
 ): Promise<CategoryTaxonomy> {
   if (!cachedTaxonomy) {
-    cachedTaxonomy =
-      (await client.getCategories()) as unknown as CategoryTaxonomy;
+    try {
+      cachedTaxonomy =
+        (await client.getCategories()) as unknown as CategoryTaxonomy;
+    } catch {
+      console.error("Warning: could not load category taxonomy. Categories will be omitted.");
+      cachedTaxonomy = {};
+    }
   }
   return cachedTaxonomy;
 }

@@ -15,15 +15,16 @@ program
   .option("--lang <code>", "2-letter language code for categories (e.g. en, it, fr)", validateLang, "en")
   .option("--no-color", "disable colored output");
 
+registerSearchCommand(program);
+registerGetCommand(program);
+
+// Utility commands
 program
   .command("languages")
-  .description("List all supported language codes")
+  .description("List all supported language codes for --lang")
   .action(() => {
     console.log("Supported language codes:");
     console.log([...SUPPORTED_LANGUAGES].sort().join(", "));
   });
-
-registerSearchCommand(program);
-registerGetCommand(program);
 
 program.parse();

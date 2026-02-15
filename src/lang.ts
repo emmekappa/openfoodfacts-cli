@@ -37,6 +37,6 @@ export function validateLang(value: string): string {
   throw new InvalidArgumentError(
     `"${value}" is not a supported language code. ` +
     `Use a 2-letter ISO 639-1 code (e.g. en, it, fr, de, es). ` +
-    `Run "off --list-languages" to see all supported codes.`
+    `Run "off languages" to see all supported codes.`
   );
 }

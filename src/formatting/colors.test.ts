@@ -5,7 +5,6 @@ import {
   colorNutrient,
   stripAnsi,
   padEndVisible,
-  nutriscoreDisplayWidth,
 } from "./colors.js";
 
 describe("colorNutriscore", () => {
@@ -77,19 +76,6 @@ describe("colorNutrient", () => {
     const result = colorNutrient(1.23, "salt_100g");
     const visible = stripAnsi(result);
     expect(visible).toBe("1.2");
-  });
-});
-
-describe("nutriscoreDisplayWidth", () => {
-  test("returns correct width based on color support", () => {
-    const expected = pc.isColorSupported ? 4 : 1;
-    expect(nutriscoreDisplayWidth("a")).toBe(expected);
-    expect(nutriscoreDisplayWidth("e")).toBe(expected);
-  });
-
-  test("returns 1 for unknown/undefined", () => {
-    expect(nutriscoreDisplayWidth("unknown")).toBe(1);
-    expect(nutriscoreDisplayWidth(undefined)).toBe(1);
   });
 });
 

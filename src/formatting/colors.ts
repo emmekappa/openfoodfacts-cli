@@ -19,19 +19,6 @@ export function colorNutriscore(grade: string | undefined): string {
   return key.toUpperCase();
 }
 
-/**
- * Returns the display length of a nutriscore string (for column alignment).
- * Emoji counts as 2 chars width in most terminals, plus space + letter = 4.
- */
-export function nutriscoreDisplayWidth(grade: string | undefined): number {
-  if (!grade || grade === "unknown" || grade === "not-applicable") return 1;
-  const key = grade.toLowerCase();
-  if (NUTRISCORE_CONFIG[key]) {
-    return pc.isColorSupported ? 4 : 1; // emoji(2) + space(1) + letter(1) vs just letter
-  }
-  return grade.length;
-}
-
 export function colorBarcode(code: string): string {
   return pc.dim(code);
 }

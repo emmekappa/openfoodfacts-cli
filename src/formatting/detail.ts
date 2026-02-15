@@ -8,23 +8,7 @@ import {
   colorNutrient,
   stripAnsi,
 } from "./colors.js";
-
-interface Nutriments {
-  "energy-kcal_100g"?: number;
-  "fat_100g"?: number;
-  "carbohydrates_100g"?: number;
-  "proteins_100g"?: number;
-  "salt_100g"?: number;
-}
-
-interface Product {
-  code?: string;
-  product_name?: string;
-  brands?: string[] | string;
-  categories?: string;
-  nutrition_grades?: string;
-  nutriments?: Nutriments;
-}
+import { formatBrands, type Product } from "./product.js";
 
 export function formatProductDetail(hit: Record<string, unknown>): void {
   const p = hit as unknown as Product;
@@ -51,8 +35,4 @@ export function formatProductDetail(hit: Record<string, unknown>): void {
   }
 }
 
-function formatBrands(brands: string[] | string | undefined): string {
-  if (!brands) return "-";
-  if (Array.isArray(brands)) return brands.join(", ");
-  return brands;
-}
+
