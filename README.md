@@ -8,6 +8,12 @@ Command-line interface for the [OpenFoodFacts API](https://world.openfoodfacts.o
 npm install -g openfoodfacts-cli
 ```
 
+### Install as AI Agent Skill
+
+```bash
+npx skills add https://github.com/emmekappa/openfoodfacts-cli
+```
+
 ## Usage
 
 ### Global options
